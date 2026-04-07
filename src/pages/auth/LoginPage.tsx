@@ -9,7 +9,8 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const onFinish = async (values) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onFinish = async (values: any) => {
     setLoading(true);
     try {
       const data = await signInUser(values.email, values.password);
@@ -17,7 +18,7 @@ const LoginPage = () => {
         message.success("Chào mừng quay trở lại!");
         navigate("/"); 
       }
-    } catch (error) {
+    } catch (error: any) {
       message.error("Email hoặc mật khẩu không chính xác");
     } finally {
       setLoading(false);

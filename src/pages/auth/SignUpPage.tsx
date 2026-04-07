@@ -8,13 +8,13 @@ const SignUpPage = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const onFinish = async (values) => {
+  const onFinish = async (values: any) => {
     setLoading(true);
     try {
       await signUpUser(values.email, values.password, values.username);
       message.success("Đăng ký thành công! Hãy kiểm tra email xác nhận.");
       navigate("/login");
-    } catch (error) {
+    } catch (error: any) {
       message.error(error.message || "Đăng ký thất bại");
     } finally {
       setLoading(false);
