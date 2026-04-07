@@ -1,32 +1,39 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from 'react-router'
-import HomeLayout from 'pages/layout/HomeLayout'
-import HomePage from 'pages/HomePage';
-import 'styles/reset.css'
-import TodoPage from './pages/TodoPage';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { createBrowserRouter, RouterProvider } from "react-router";
+import HomeLayout from "pages/layout/HomeLayout";
+import "styles/reset.css";
+import TodoPage from "./pages/TodoPage";
+import LoginPage from "./pages/auth/LoginPage";
+import SignUpPage from "./pages/auth/SignUpPage";
+import { AppProvider } from "./context/app.context";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <HomeLayout />,
-    // errorElement: <NotFoundPage />,
     children: [
-      { index: true, element: <HomePage /> },
+      { index: true, element: <TodoPage /> },
       {
         path: "/",
-        element: <HomePage />,
-      },
-      {
-        path: "/todo",
         element: <TodoPage />,
       },
     ],
+  },
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
+    path: "/signup",
+    element: <SignUpPage />,
   },
 ]);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AppProvider>
+      <RouterProvider router={router} />
+    </AppProvider>
   </StrictMode>,
 );
