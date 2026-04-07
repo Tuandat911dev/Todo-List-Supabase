@@ -1,6 +1,8 @@
-import { useState } from "react";
-import { Layout, Button, Avatar, Dropdown, Space, Typography, type MenuProps } from "antd";
-import { UserOutlined, LogoutOutlined, SettingOutlined, LoginOutlined, UserAddOutlined } from "@ant-design/icons";
+import { Layout, Button, Avatar, Dropdown, Space, Typography, type MenuProps, message } from "antd";
+import { UserOutlined, LogoutOutlined, LoginOutlined, UserAddOutlined } from "@ant-design/icons";
+import { useCurrentApp } from "@/context/app.context";
+import { Link } from "react-router";
+import { supabase } from "@/utils/supabase";
 
 const { Header } = Layout;
 const { Text } = Typography;
@@ -8,19 +10,23 @@ const { Text } = Typography;
 type MenuItem = Required<MenuProps>["items"][number];
 
 const AppHeader = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const { user, isAuthenticated, setUser, setIsAuthenticated } = useCurrentApp();
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+
+      setUser(null);
+      setIsAuthenticated(false);
+
+      message.success("Đăng xuất thành công!");
+    } catch (error) {
+      message.error("Lỗi khi đăng xuất: " + error.message);
+    }
+  };
 
   const userMenuItems: MenuItem[] = [
-    {
-      key: "profile",
-      label: "Thông tin cá nhân",
-      icon: <UserOutlined />,
-    },
-    {
-      key: "settings",
-      label: "Cài đặt",
-      icon: <SettingOutlined />,
-    },
     {
       type: "divider",
     },
@@ -29,9 +35,10 @@ const AppHeader = () => {
       label: "Đăng xuất",
       icon: <LogoutOutlined />,
       danger: true,
-      onClick: () => setIsLoggedIn(false),
+      onClick: () => handleLogout(),
     },
   ];
+
 
   return (
     <Header
@@ -68,7 +75,7 @@ const AppHeader = () => {
       </div>
 
       <div style={{ display: "flex", alignItems: "center" }}>
-        {isLoggedIn ? (
+        {isAuthenticated ? (
           <Dropdown menu={{ items: userMenuItems }} placement="bottomRight" arrow>
             <Space
               style={{ cursor: "pointer", padding: "4px 8px", borderRadius: "6px", transition: "all 0.3s" }}
@@ -79,16 +86,16 @@ const AppHeader = () => {
                 icon={<UserOutlined />}
                 style={{ backgroundColor: "#87d068" }}
               />
-              <Text strong>John Doe</Text>
+              <Text strong>{user?.username}</Text>
             </Space>
           </Dropdown>
         ) : (
           <Space size="middle">
-            <Button type="text" icon={<LoginOutlined />} onClick={() => setIsLoggedIn(true)}>
-              Đăng nhập
+            <Button type="text" icon={<LoginOutlined />}>
+              <Link to="/login">Đăng nhập</Link>
             </Button>
             <Button type="primary" icon={<UserAddOutlined />} shape="round">
-              Đăng ký
+              <Link to="/signup">Đăng ký</Link>
             </Button>
           </Space>
         )}
