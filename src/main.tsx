@@ -2,7 +2,9 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import HomeLayout from 'pages/layout/HomeLayout'
-import HomePage from './pages/HomePage';
+import HomePage from 'pages/HomePage';
+import 'styles/reset.css'
+import TodoPage from './pages/TodoPage';
 
 const router = createBrowserRouter([
   {
@@ -14,7 +16,11 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <HomePage />,
-      }
+      },
+      {
+        path: "/todo",
+        element: <TodoPage />,
+      },
     ],
   },
 ]);
