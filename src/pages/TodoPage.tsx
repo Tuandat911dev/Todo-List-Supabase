@@ -50,9 +50,16 @@ const TodoPage = () => {
     }
   }
 
-  const deleteTodo = (id: number) => {
-    setTodos(todos.filter((t) => t.id !== id));
-  };
+  async function deleteTodo(id: number) {
+    const { error } = await supabase.from("todos").delete().eq("id", id);
+
+    if (error) {
+      message.error("Lỗi khi xoá!");
+    } else {
+      setTodos(todos.filter((t) => t.id !== id));
+      message.success("Đã xoá công việc");
+    }
+  }
 
   const filteredTodos = todos.filter((t) => {
     if (filter === "active") return !t.completed;
