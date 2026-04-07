@@ -25,6 +25,21 @@ const TodoPage = () => {
     fetchTodos();
   }, []);
 
+  async function addTodo(title: string) {
+    if (!title.trim()) return;
+
+    const { data, error } = await supabase
+      .from("todos")
+      .insert([{ title: title, completed: false }])
+      .select();
+
+    if (error) {
+      message.error("Lỗi khi thêm mới!");
+    } else {
+      setTodos([data[0], ...todos]);
+    }
+  }
+
   const toggleTodo = (id: number) => {
     setTodos(todos.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)));
   };
