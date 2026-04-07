@@ -25,7 +25,7 @@ const TodoPage = () => {
   useEffect(() => {
     if (isAuthenticated && user) {
       async function fetchTodos() {
-        const { data, error } = await supabase.from("todos").select("*").order("id", { ascending: false }).eq("created_by", user.id);
+        const { data, error } = await supabase.from("todos").select("*").order("id", { ascending: false }).eq("created_by", user!.id);
 
         if (error) message.error("Không thể tải dữ liệu!");
         else setTodos(data || []);
