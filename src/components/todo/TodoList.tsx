@@ -9,7 +9,7 @@ type Todo = {
 
 interface IProp {
   dataSource: Todo[];
-  onToggle: (v: number) => void;
+  onToggle: (v: number, c: boolean) => void;
   onDelete: (v: number) => void;
 }
 
@@ -31,7 +31,7 @@ const TodoList = (props: IProp) => {
           actions={[<Button type="text" danger icon={<DeleteOutlined />} onClick={() => onDelete(item.id)} />]}
         >
           <List.Item.Meta
-            avatar={<Checkbox checked={item.completed} onChange={() => onToggle(item.id)} />}
+            avatar={<Checkbox checked={item.completed} onChange={() => onToggle(item.id, item.completed)} />}
             title={
               <Typography.Text delete={item.completed} style={{ color: item.completed ? "#bfbfbf" : "inherit" }}>
                 {item.title}

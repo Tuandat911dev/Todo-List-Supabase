@@ -40,9 +40,15 @@ const TodoPage = () => {
     }
   }
 
-  const toggleTodo = (id: number) => {
-    setTodos(todos.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)));
-  };
+  async function toggleTodo(id: number, currentStatus: boolean) {
+    const { error } = await supabase.from("todos").update({ completed: !currentStatus }).eq("id", id);
+
+    if (error) {
+      message.error("Không thể cập nhật!");
+    } else {
+      setTodos(todos.map((t) => (t.id === id ? { ...t, completed: !currentStatus } : t)));
+    }
+  }
 
   const deleteTodo = (id: number) => {
     setTodos(todos.filter((t) => t.id !== id));
