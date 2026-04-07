@@ -1,26 +1,29 @@
-import { useState } from "react";
-import { Card } from "antd";
+import { useEffect, useState } from "react";
+import { Card, message } from "antd";
 import TodoInput from "components/todo/TodoInput";
 import TodoFilter from "components/todo/TodoFilter";
 import TodoList from "components/todo/TodoList";
+import { supabase } from "@/utils/supabase";
 
 type Todo = {
-    id: number,
-    title: string,
-    completed: boolean
-}
+  id: number;
+  title: string;
+  completed: boolean;
+};
 const TodoPage = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState("all");
 
-  const getRandomArbitrary = (min: number, max: number) => {
-    return Math.random() * (max - min) + min;
-  }
+  useEffect(() => {
+    async function fetchTodos() {
+      const { data, error } = await supabase.from("todos").select("*").order("id", { ascending: false });
 
-  const addTodo = (title: string) => {
-    const newTodo = { id: getRandomArbitrary(1, 999999), title, completed: false };
-    setTodos([newTodo, ...todos]);
-  };
+      if (error) message.error("Không thể tải dữ liệu!");
+      else setTodos(data || []);
+    }
+
+    fetchTodos();
+  }, []);
 
   const toggleTodo = (id: number) => {
     setTodos(todos.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)));
