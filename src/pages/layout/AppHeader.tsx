@@ -19,8 +19,8 @@ const AppHeader = () => {
       setIsAuthenticated(false);
 
       message.success("Đăng xuất thành công!");
-    } catch (error: any) {
-      message.error("Lỗi khi đăng xuất: " + error.message);
+    } catch (error: unknown) {
+      message.error("Lỗi khi đăng xuất: " + error);
     }
   };
 
