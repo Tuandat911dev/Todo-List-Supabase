@@ -1,14 +1,8 @@
 import { List, Checkbox, Button, Tag, Typography } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 
-type Todo = {
-  id: number;
-  title: string;
-  completed: boolean;
-};
-
 interface IProp {
-  dataSource: Todo[];
+  dataSource: ITodo[];
   onToggle: (v: number, c: boolean) => void;
   onDelete: (v: number) => void;
 }
@@ -26,7 +20,7 @@ const TodoList = (props: IProp) => {
         hideOnSinglePage: true,
         style: { marginTop: 24 },
       }}
-      renderItem={(item: Todo) => (
+      renderItem={(item: ITodo) => (
         <List.Item
           actions={[<Button type="text" danger icon={<DeleteOutlined />} onClick={() => onDelete(item.id)} />]}
         >

@@ -7,42 +7,41 @@ import { supabase } from "@/utils/supabase";
 import { LoginOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router";
 import { useCurrentApp } from "@/context/app.context";
+import { createTodo, deleteTodo, fetchTodos } from "@/services/api/todo/todo.api";
 
 const { Title, Text } = Typography;
 
-type Todo = {
-  id: number;
-  title: string;
-  completed: boolean;
-};
-
 const TodoPage = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [todos, setTodos] = useState<ITodo[]>([]);
   const [filter, setFilter] = useState("all");
   const navigate = useNavigate();
   const { isAuthenticated, user } = useCurrentApp();
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      async function fetchTodos() {
-        const { data, error } = await supabase.from("todos").select("*").order("id", { ascending: false }).eq("created_by", user!.id);
+      const loadTodo = async () => {
+        try {
+          const data: ITodo[] = await fetchTodos(user);
+          setTodos(data || []);
+        } catch (error: unknown) {
+          message.error("Không thể tải dữ liệu!");
+          console.error(error);
+        }
+      };
 
-        if (error) message.error("Không thể tải dữ liệu!");
-        else setTodos(data || []);
-      }
-      fetchTodos();
+      loadTodo();
     }
   }, [isAuthenticated, user]);
 
   async function addTodo(title: string) {
     if (!title.trim()) return;
-    const { data, error } = await supabase
-      .from("todos")
-      .insert([{ title: title, completed: false }])
-      .select();
-
-    if (error) message.error("Lỗi khi thêm mới!");
-    else setTodos([data[0], ...todos]);
+    try {
+      const data: ITodo[] = await createTodo(title);
+      setTodos([data[0], ...todos]);
+    } catch (error: unknown) {
+      message.error("Không thể tạo mới todo");
+      console.error(error);
+    }
   }
 
   async function toggleTodo(id: number, currentStatus: boolean) {
@@ -51,12 +50,14 @@ const TodoPage = () => {
     else setTodos(todos.map((t) => (t.id === id ? { ...t, completed: !currentStatus } : t)));
   }
 
-  async function deleteTodo(id: number) {
-    const { error } = await supabase.from("todos").delete().eq("id", id);
-    if (error) message.error("Lỗi khi xoá!");
-    else {
+  async function handleDeleteTodo(id: number) {
+    try {
+      await deleteTodo(id);
       setTodos(todos.filter((t) => t.id !== id));
       message.success("Đã xoá công việc");
+    } catch (error: unknown) {
+      message.error("Lỗi khi xoá!");
+      console.error(error);
     }
   }
 
@@ -66,10 +67,11 @@ const TodoPage = () => {
     return true;
   });
 
-
   if (!isAuthenticated) {
     return (
-      <div style={{ textAlign: "center", height: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div
+        style={{ textAlign: "center", height: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}
+      >
         <Space orientation="vertical" size="large">
           <Title level={1} style={{ fontSize: "64px", marginBottom: 0 }}>
             TODO APP
@@ -96,7 +98,7 @@ const TodoPage = () => {
       <Card title="DANH SÁCH CÔNG VIỆC" variant={"borderless"} style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
         <TodoInput onAdd={addTodo} />
         <TodoFilter currentFilter={filter} onFilterChange={setFilter} />
-        <TodoList dataSource={filteredTodos} onToggle={toggleTodo} onDelete={deleteTodo} />
+        <TodoList dataSource={filteredTodos} onToggle={toggleTodo} onDelete={handleDeleteTodo} />
       </Card>
     </div>
   );

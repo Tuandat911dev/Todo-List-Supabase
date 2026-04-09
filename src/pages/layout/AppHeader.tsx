@@ -2,7 +2,7 @@ import { Layout, Button, Avatar, Dropdown, Space, Typography, type MenuProps, me
 import { UserOutlined, LogoutOutlined, LoginOutlined, UserAddOutlined } from "@ant-design/icons";
 import { useCurrentApp } from "@/context/app.context";
 import { Link } from "react-router";
-import { supabase } from "@/utils/supabase";
+import { logout } from "@/services/api/auth/auth.api";
 
 const { Header } = Layout;
 const { Text } = Typography;
@@ -14,9 +14,7 @@ const AppHeader = () => {
 
   const handleLogout = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-
+      await logout();
       setUser(null);
       setIsAuthenticated(false);
 
@@ -38,7 +36,6 @@ const AppHeader = () => {
       onClick: () => handleLogout(),
     },
   ];
-
 
   return (
     <Header

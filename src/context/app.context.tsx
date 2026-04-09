@@ -3,13 +3,6 @@ import { message } from "antd";
 import { createContext, useContext, useEffect, useState } from "react";
 import { FadeLoader } from "react-spinners";
 
-interface IUser {
-  id: string;
-  email: string;
-  username: string;
-  avatar_url: string;
-  full_name: string;
-}
 
 interface IAppContext {
   isAuthenticated: boolean;

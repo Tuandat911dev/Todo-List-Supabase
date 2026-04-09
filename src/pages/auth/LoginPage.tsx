@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Form, Input, Button, Card, Typography, message } from "antd";
 import { MailOutlined, LockOutlined } from "@ant-design/icons";
-import { signInUser } from "@/utils/supabase";
 import { Link, useNavigate } from "react-router";
+import { signInUser } from "@/services/api/auth/auth.api";
 
 
 const LoginPage = () => {
@@ -18,8 +18,9 @@ const LoginPage = () => {
         message.success("Chào mừng quay trở lại!");
         navigate("/"); 
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       message.error("Email hoặc mật khẩu không chính xác");
+      console.error(error);
     } finally {
       setLoading(false);
     }

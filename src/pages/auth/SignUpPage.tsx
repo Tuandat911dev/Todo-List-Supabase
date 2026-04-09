@@ -1,21 +1,28 @@
 import { useState } from "react";
 import { Form, Input, Button, Card, Typography, message } from "antd";
 import { UserOutlined, MailOutlined, LockOutlined } from "@ant-design/icons";
-import { signUpUser } from "@/utils/supabase";
+import { signUpUser } from "@/services/api/auth/auth.api";
 import { useNavigate, Link } from "react-router";
+
+type TSignup = {
+  email: string;
+  password: string;
+  username: string;
+}
 
 const SignUpPage = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: TSignup) => {
     setLoading(true);
     try {
       await signUpUser(values.email, values.password, values.username);
       message.success("Đăng ký thành công! Hãy kiểm tra email xác nhận.");
       navigate("/login");
-    } catch (error: any) {
-      message.error(error.message || "Đăng ký thất bại");
+    } catch (error: unknown) {
+      message.error("Đăng ký thất bại");
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -35,7 +42,7 @@ const SignUpPage = () => {
         <Typography.Title level={2} style={{ textAlign: "center" }}>
           Đăng ký
         </Typography.Title>
-        <Form layout="vertical" onFinish={onFinish}>
+        <Form<TSignup> layout="vertical" onFinish={onFinish}>
           <Form.Item name="username" rules={[{ required: true, message: "Nhập tên hiển thị!" }]}>
             <Input prefix={<UserOutlined />} placeholder="Username" size="large" />
           </Form.Item>
